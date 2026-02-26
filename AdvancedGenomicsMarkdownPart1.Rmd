@@ -1,0 +1,188 @@
+---
+title: "Code used for metagenomic analysis"
+author: "Group 4"
+date: "2026-2-24"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+```
+## Introduction
+This is an R Markdown document containing the code used 
+to create the plots shown in our poster for the LIFE752
+Advanced Genomics semester 1 assignment. 
+
+The code contains bash-scripts used to run the 
+command-line software utilised throughout. 
+
+## Environment set-up
+```{bash, eval=FALSE, echo=TRUE}
+#miniforge was installed
+wget https://github.com/conda-forge/miniforge
+bash Miniforge3-Linux-x86_64.sh
+conda config --set auto_activate_base false
+#a dedicated environment was set-up
+mamba create -n shotgun_meta python=3.11
+#specified python version to use as 3.11
+mamba activate shotgun_meta
+mamba install -c bioconda fastqc trim_galore multiqc bowtie2 kraken2 \
+krona bracken lefse flash megahit quast metabat2 prokka bbmap circos
+#the krona database was updated using:
+ktUpdateTaxonomy.sh
+```
+
+## Kraken2 set-up
+```bash
+#in home directory
+mkdir kraken2_db
+cd kraken2_db
+wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20251015.tar.gz
+tar -xvzf k2_standard_08_GB_20251015
+#the standard database with archaea, bacteria, viral, plasmid and human sequences - capped at 8 gigabytes
+```
+
+## Data acquisition and quality control assessment
+```bash
+mkdir -p ~/1-raw
+cd ~/1-raw
+wget -r -np -nH --cut-dirs=3 -A "*.fastq.gz" https://cgr.liv.ac.uk/454/acdarby/LIFE750/
+#This downloads the three sets of data used in this study: K1_R1, K1_R2 , K2_R1, K2_R2, W1_R1 and W2_R2 (all fastq.gz), where K1 and K2 are two different individuals on a Korean diet and W1 is an individual on a Western diet. R1 signifies read-pair1 and E2 read-pair 2 as these were illumina read-pairs
+mkdir R1_fastqc
+mkdir R2_fastqc
+fastqc -t 4 -o R1_fastqc *R1.fastq.gz
+fastqc -t 4 -o R2_fastqc *R2.fastq.gz
+mkdir R1_fastqc/multiqc
+mkdir R2_fastqc/multiqc
+multiqc -o R1_fastqc/multiqc R1_fastqc
+multiqc -o R2_fastqc/multiqc R2_fastqc
+```
+
+## Visualisation of read pairs 1 and 2 initial quality 
+```bash
+firefox 1-raw/R1_fastqc/multiqc/multiqc_report.html \
+1-raw/R2_fastqc/multiqc/multiqc_report.html & #to run in background
+```
+
+## Trimming read pairs 
+```bash
+cd ~ #return to home directory
+mkdir 2-Trimmed
+cd 2-Trimmed
+trim_galore --paired --quality 20 --stringency 4 \
+~/1-raw/K1_R1.fastq.gz ~/1-raw/K1_R2.fastq.gz
+trim_galore --paired --quality 20 --stringency 4 \
+~/1-raw/K2_R1.fastq.gz ~/1-raw/K2_R2.fastq.gz
+trim_galore --paired --quality 20 --stringency 4 \
+~/1-raw/W1_R1.fastq.gz ~/1-raw/W1_R2.fastq.gz
+#all sequences generated were re-named in the following manner
+mv K1_R1_val_1.fq.gz K1_R1.fq.gz
+mkdir R1_fastqc
+mkdir R2_fastqc
+fastqc -t 4 -o R1_fastqc *R1.fq.gz
+fastqc -t 4 -o R2_fastqc *R2.fq.gz
+mkdir R1_fastqc/multiqc
+mkdir R2_fastqc/multiqc
+multiqc -o R1_fastqc/multiqc R1_fastqc
+multiqc -o R2_fastqc/multiqc R2_fastqc
+```
+
+## Quality control read pairs 1  and 2 post-trimming
+```bash
+firefox 2-Trimmed/R1_fastqc/multiqc/multiqc_report.html \
+2-Trimmed/R2_fastqc/multiqc/multiqc_report.html &
+```
+
+## Kraken2
+```bash
+cd ~
+mkdir 3-Taxonomy
+cd 3-Taxonomy
+kraken2 --paired \
+--db ~/kraken2_db/k2_standard_08_GB_20251015 \
+--output K1.kraken \
+--report K1.kreport2 \
+~/2-Trimmed/K1_R1.fq.gz ~/2-Trimmed/K1_R2.fq.gz
+
+kraken2 --paired \
+--db ~/kraken2_db/k2_standard_08_GB_20251015 \
+--output K1.kraken \
+--report K1.kreport2 \
+~/2-Trimmed/K2_R1.fq.gz ~/2-Trimmed/K2_R2.fq.gz
+
+kraken2 --paired \
+--db ~/kraken2_db/k2_standard_08_GB_20251015 \
+--output K1.kraken \
+--report K1.kreport2 \
+~/2-Trimmed/W1_R1.fq.gz ~/2-Trimmed/W1_R2.fq.gz
+
+ktImportTaxonomy -o kraken2.krona.html *.kreport2
+
+firefox kraken2.krona.html
+```
+
+## Bracken 
+```bash
+#kraken2 kreport files are used to run Bracken
+bracken -d ~/kraken2_db/k2_standard_08_GB_20251015 \
+  -i K1.kreport2 \
+  -o K1.bracken \
+  -w K1.breport2 \
+  -r 100 \
+  -l S \
+  -t 5
+  
+bracken -d ~/kraken2_db/k2_standard_08_GB_20251015 \
+  -i K2.kreport2 \
+  -o K2.bracken \
+  -w K2.breport2 \
+  -r 100 \
+  -l S \
+  -t 5
+
+bracken -d ~/kraken2_db/k2_standard_08_GB_20251015 \
+  -i K2.kreport2 \
+  -o K2.bracken \
+  -w K2.breport2 \
+  -r 100 \
+  -l S \
+  -t 5
+
+combine_bracken_outputs.py --files K1.bracken K2.bracken W1.bracken --o all.bracken.three_indvs
+
+seq -s , 4 2 50
+bracken_num_columns=$(seq -s , 4 2 50)
+echo $bracken_num_columns
+
+cut -f 1,$bracken_num_columns all.bracken.three_indvs > all_num_threeindvs.bracken
+
+nano all_num_threeindvs.bracken
+#diet, 2 K's and a W were written as the files header, with tab-separation. The file was renamed all_num_threeindvs.lefse.bracken
+
+lefse_format_input.py all_num_threeindvs.lefse.bracken all_num_threeindvs.lefse -c 1 -u 2 -o 1000000
+
+lefse_run.py all_num_threeindvs.lefse all_num_threeindvs.lefse.out
+#Number of significantly discriminative features: 0 ( 0 ) before internal wilcoxon
+#No features with significant differences between the two classes
+#Number of discriminative features with abs LDA score > 2.0 : 0
+
+lefse_plot_res.py --dpi 200 --format png all_num_threeindvs.lefse.out threeindvs.png
+#No differentially abundant features found in all_num_threeindvs.lefse.out
+#No png output 
+```
+
+## Bracken with additional files
+```bash
+Lefse file created as series of combined bracken outputs from 6 Korean individuals (with 2 datapoints each, before and after diet) and 6 Western individuals (before and after diet datapoints) was downloaded. Data originated from this study: https://www.ebi.ac.uk/metagenomics/studies/MGYS00000394#overview
+
+wget hhtps://cgr.liv.ac.uk/454/acdarby/LIFE750/lefse/all_num.lefse.bracken
+#lefse file created from first using above workflow to combine the 12 K and 12 W bracken files, by Professor Darby
+mv all_num.lefse.bracken 3-Taxonomy
+
+lefse_format_input.py all_num.lefse.bracken all_num.lefse -c 1 -u 2 -o 1000000
+lefse_run.py all_num.lefse all_num.lefse.out
+lefse_plot_res.py --dpi 200 --format png all_num.lefse.out biomarkers.png
+firefox biomarkers.png
+```
+
