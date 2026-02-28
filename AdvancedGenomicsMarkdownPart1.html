@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Group 4" />
+<meta name="author" content="James C (Group 4)" />
 
 
-<title>Code used for metagenomic analysis</title>
+<title>LIFE750 Advanced Genomics assessment 1 code</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,8 +349,9 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Code used for metagenomic analysis</h1>
-<h4 class="author">Group 4</h4>
+<h1 class="title toc-ignore">LIFE750 Advanced Genomics assessment 1
+code</h1>
+<h4 class="author">James C (Group 4)</h4>
 <h4 class="date">2026-2-24</h4>
 
 </div>
@@ -358,11 +359,14 @@ display: none;
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This is an R Markdown document containing the code used to create the
-plots shown in our poster for the LIFE752 Advanced Genomics semester 1
-assignment.</p>
+<p>This is an R Markdown document containing the code used to generate
+the plots shown in our poster for the LIFE750 Advanced Genomics semester
+1 assignment.</p>
 <p>The code contains bash-scripts used to run the command-line software
 utilised throughout.</p>
+</div>
+<div id="part-1" class="section level2">
+<h2>Part 1</h2>
 </div>
 <div id="environment-set-up" class="section level2">
 <h2>Environment set-up</h2>
@@ -386,7 +390,8 @@ mkdir kraken2_db
 cd kraken2_db
 wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20251015.tar.gz
 tar -xvzf k2_standard_08_GB_20251015
-#the standard database with archaea, bacteria, viral, plasmid and human sequences - capped at 8 gigabytes</code></pre>
+#the standard database with archaea, bacteria, viral, plasmid and human sequences - capped at 8 gigabytes
+#(Wood, Lu and Langmead, 2019)</code></pre>
 </div>
 <div id="data-acquisition-and-quality-control-assessment" class="section level2">
 <h2>Data acquisition and quality control assessment</h2>
@@ -401,7 +406,8 @@ fastqc -t 4 -o R2_fastqc *R2.fastq.gz
 mkdir R1_fastqc/multiqc
 mkdir R2_fastqc/multiqc
 multiqc -o R1_fastqc/multiqc R1_fastqc
-multiqc -o R2_fastqc/multiqc R2_fastqc</code></pre>
+multiqc -o R2_fastqc/multiqc R2_fastqc
+#(Ewels et al., 2016),(s-andrews, 2018)</code></pre>
 </div>
 <div id="visualisation-of-read-pairs-1-and-2-initial-quality" class="section level2">
 <h2>Visualisation of read pairs 1 and 2 initial quality</h2>
@@ -428,7 +434,8 @@ fastqc -t 4 -o R2_fastqc *R2.fq.gz
 mkdir R1_fastqc/multiqc
 mkdir R2_fastqc/multiqc
 multiqc -o R1_fastqc/multiqc R1_fastqc
-multiqc -o R2_fastqc/multiqc R2_fastqc</code></pre>
+multiqc -o R2_fastqc/multiqc R2_fastqc
+#(Ewels et al., 2016),(s-andrews, 2018),(Krueger, 2024)</code></pre>
 </div>
 <div id="quality-control-read-pairs-1-and-2-post-trimming" class="section level2">
 <h2>Quality control read pairs 1 and 2 post-trimming</h2>
@@ -460,7 +467,8 @@ kraken2 --paired \
 
 ktImportTaxonomy -o kraken2.krona.html *.kreport2
 
-firefox kraken2.krona.html</code></pre>
+firefox kraken2.krona.html
+#(Ondov, Bergman and Phillippy, 2011),(Wood, Lu and Langmead, 2019)</code></pre>
 </div>
 <div id="bracken" class="section level2">
 <h2>Bracken</h2>
@@ -509,7 +517,8 @@ lefse_run.py all_num_threeindvs.lefse all_num_threeindvs.lefse.out
 
 lefse_plot_res.py --dpi 200 --format png all_num_threeindvs.lefse.out threeindvs.png
 #No differentially abundant features found in all_num_threeindvs.lefse.out
-#No png output </code></pre>
+#No png output 
+#(Segata et al., 2011),(Lu et al., 2017)</code></pre>
 </div>
 <div id="bracken-with-additional-files" class="section level2">
 <h2>Bracken with additional files</h2>
@@ -522,7 +531,135 @@ mv all_num.lefse.bracken 3-Taxonomy
 lefse_format_input.py all_num.lefse.bracken all_num.lefse -c 1 -u 2 -o 1000000
 lefse_run.py all_num.lefse all_num.lefse.out
 lefse_plot_res.py --dpi 200 --format png all_num.lefse.out biomarkers.png
-firefox biomarkers.png</code></pre>
+firefox biomarkers.png
+#(Segata et al., 2011)</code></pre>
+</div>
+<div id="references-part-1" class="section level2">
+<h2>References Part 1</h2>
+<pre><code>#Where a paper citation is not provided, a link to the relevant github in citation format is.
+Ewels, P., Magnusson, M., Lundin, S. and Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics, 32(19), pp.3047–3048. doi:https://doi.org/10.1093/bioinformatics/btw354.
+Krueger, F. (2024). FelixKrueger/TrimGalore. [online] GitHub. Available at: https://github.com/FelixKrueger/TrimGalore?tab=readme-ov-file.
+Lu, J., Breitwieser, F.P., Thielen, P. and Salzberg, S.L. (2017). Bracken: estimating species abundance in metagenomics data. PeerJ Computer Science, 3, p.e104. doi:https://doi.org/10.7717/peerj-cs.104.
+Ondov, B.D., Bergman, N.H. and Phillippy, A.M. (2011). Interactive metagenomic visualization in a Web browser. BMC Bioinformatics, 12(1). doi:https://doi.org/10.1186/1471-2105-12-385.
+s-andrews (2018). s-andrews/FastQC. [online] GitHub. Available at: https://github.com/s-andrews/FastQC.
+Segata, N., Izard, J., Waldron, L., Gevers, D., Miropolsky, L., Garrett, W.S. and Huttenhower, C. (2011). Metagenomic biomarker discovery and explanation. Genome Biol, [online] 12(6), p.R60. doi:https://doi.org/10.1186/gb-2011-12-6-r60.
+Wood, D.E., Lu, J. and Langmead, B. (2019). Improved metagenomic analysis with Kraken 2. Genome Biology, 20(1). doi:https://doi.org/10.1186/s13059-019-1891-0.</code></pre>
+</div>
+<div id="part-2" class="section level2">
+<h2>Part 2</h2>
+</div>
+<div id="stitching-read-pairs" class="section level2">
+<h2>Stitching read pairs</h2>
+<pre class="bash"><code>cd ~
+mkdir 5-Stitched
+cd ~/5-Stitched
+flash -o K1 -z -t 12 -d . \
+~/2-Trimmed/K1_R1.fq.gz ~/2-Trimmed/K1_R2.fq.gz
+#set threads (-t) to be suitable to used device, mine was fine with 12 threads as has 16 cores.
+#-d = output to current directory (. means current directory)
+#(Magoc and Salzberg, 2011)</code></pre>
+</div>
+<div id="megahit" class="section level2">
+<h2>Megahit</h2>
+<pre class="bash"><code>cd ~
+mkdir 6-Assembly
+cd ~/6-Assembly
+megahit \
+-r ~/5-Stitched/K1.extendedFrags.fastq.gz \
+-1 ~/5-Stitched/K1.notCombined_1.fastq.gz \
+-2 ~/5-Stitched/K1.notCombined_2.fastq.gz \
+-o K1 \
+-t 12 \
+--k-list 29,49,69,89,109,129,149,169,189
+less K1/final.contigs.fa #review output
+#(Li et al., 2015)</code></pre>
+</div>
+<div id="quast" class="section level2">
+<h2>Quast</h2>
+<pre class="bash"><code>#in 6-Assembly folder
+mkdir -p quast/K1
+quast -o quast/K1 K1/final.contigs.fa
+firefox quast/K1/report.html
+#(Mikheenko et al., 2018)</code></pre>
+</div>
+<div id="metabat-genome-binning" class="section level2">
+<h2>Metabat Genome binning</h2>
+<pre class="bash"><code>cd ~
+mkdir -p ~/7-Binning/K1
+cd ~/7-Binning/K1
+bwa index ~/6-Assembly/K1/final.contigs.fa
+bwa mem ~/6-Assembly/K1/final.contigs.fa \
+~/2-Trimmed/K1_R1.fq.gz ~/2-Trimmed/K1_R1.fq.gz &gt; \
+K1.sam #generated in K1 folder
+samtools view -bu K1.sam &gt; K1.bam
+samtools sort K1.bam &gt; K1.sort.bam
+jgi_summarize_bam_contig_depths --outputDepth K1.depth.txt K1.sort.bam
+less K1.depth.txt #view output 
+mkdir bins (inside 7-Binning/K1)
+metabat2 \
+--inFile ~/6-Assembly/K1/final.contigs.fa \
+--outFIle bins/K1 \
+--abdFile K1.depth.txt \
+--minContig 1500
+#generated 2 bins, K1.1.fa and K1.2.fa
+#(Li, 2013),(Kang et al., 2019),(Danecek et al., 2021)</code></pre>
+</div>
+<div id="bakta" class="section level1">
+<h1>Bakta</h1>
+<pre class="bash"><code>mamba deactivate
+mamba activate shotgun_meta
+conda install -c conda-forge -c bioconda bakta
+wget https://zenodo.org/records/14916843/files/db-light.tar.xz?download=1
+tar -xvsf &#39;db-light.tar.xz?download=1&#39;
+
+#data was downloaded for this for all individuals, not just K1, K2 and W2 with the following:
+wget -r -np -nH --cut-dirs=4 \ https://cgr.liv.ac.uk/454/acdarby/LIFE750/Workshops/Workshop01/8-Annotation/
+#downloaded to 7-Binning/K1_fullset/bins, K1.*.fa - * being 1-30 bins 
+cd ~
+mkdir 7-Binning_cont
+cd ~/7-Binning_cont
+ls -1 ~/7-Binning/K1_fullset/bins/*fa | while read f ; \
+do s=$(basename $f | sed &quot;s/.fa//&quot;) ; echo $s ; \
+bakta --db ~/bakta_db/db-light\
+-o ${s} \
+$f
+done
+#bakta outdated for databases downloaded above, used bakta_db download --output ~ --type light
+#with path of ~/bakta_db/db-light
+
+#could use code - 
+for f in ~/7-Binning/K1_fullset/bins/*.fa; do
+    s=$(basename &quot;$f&quot; .fa)
+    echo &quot;$s&quot;
+    bakta --db ~/bakta_db/db-light -o &quot;$s&quot; &quot;$f&quot;
+done
+#error message = AttributeError: module &#39;pyrodigal&#39; has no attribute &#39;OrfFinder&#39;,
+installed pyrodigal version incompatible with bakta
+#conda create -n bakta -c conda-forge -c bioconda bakta
+#conda activate bakta
+
+ls -1 ~/7-Binning/K1_fullset/bins/*fa | while read f ; \
+do s=$(basename $f | sed &quot;s/.fa//&quot;) ; echo $s ; \
+bakta --db ~/db-light \
+-o ${s} \
+$f
+done
+#ran with newer database first downloaded, armfinder error, so ran - amrfinder_update --force_update \
+--database /home/james/db-light/amrfinderplus-db
+#ran command again 
+#This creates 30 gff3 files, which can be parsed for gene names- K1.1 and K1.2 will match the 
+#bins which were made by the three individuals K1, K2 and W1 used throughout. 
+#(Schwengers et al., 2021)</code></pre>
+<div id="part-2-references" class="section level2">
+<h2>Part 2 references</h2>
+<pre><code>Danecek, P., Bonfield, J.K., Liddle, J., Marshall, J., Ohan, V., Pollard, M.O., Whitwham, A., Keane, T., McCarthy, S.A., Davies, R.M. and Li, H. (2021). Twelve years of SAMtools and BCFtools. GigaScience, 10(2). doi:https://doi.org/10.1093/gigascience/giab008.
+Kang, D.D., Li, F., Kirton, E., Thomas, A., Egan, R., An, H. and Wang, Z. (2019). MetaBAT 2: an adaptive binning algorithm for robust and efficient genome reconstruction from metagenome assemblies. PeerJ, [online] 7, p.e7359. doi:https://doi.org/10.7717/peerj.7359.
+Li, D., Liu, C.-M., Luo, R., Sadakane, K. and Lam, T.-W. (2015). MEGAHIT: an ultra-fast single-node solution for large and complex metagenomics assembly via succinct de Bruijn graph. Bioinformatics, [online] 31(10), pp.1674–1676. doi:https://doi.org/10.1093/bioinformatics/btv033.
+Li, H. (2013). Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. [online] arXiv.org. Available at: https://arxiv.org/abs/1303.3997.
+Magoc, T. and Salzberg, S.L. (2011). FLASH: fast length adjustment of short reads to improve genome assemblies. Bioinformatics, 27(21), pp.2957–2963. doi:https://doi.org/10.1093/bioinformatics/btr507.
+Mikheenko, A., Prjibelski, A., Saveliev, V., Antipov, D. and Gurevich, A. (2018). Versatile genome assembly evaluation with QUAST-LG. Bioinformatics, 34(13), pp.i142–i150. doi:https://doi.org/10.1093/bioinformatics/bty266.
+Schwengers, O., Jelonek, L., Dieckmann, M.A., Beyvers, S., Blom, J. and Goesmann, A. (2021). Bakta: rapid and standardized annotation of bacterial genomes via alignment-free sequence identification. Microbial Genomics, 7(11). doi:https://doi.org/10.1099/mgen.0.000685.</code></pre>
+</div>
 </div>
 
 
